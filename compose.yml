@@ -1,0 +1,33 @@
+
+services:
+  web:
+    build: apache
+    ports:
+      - 80:80
+    volumes:
+      - ./apache/tarefa1.conf:/etc/apache2/sites-enabled/tarefa1.conf
+      - ./exemplo.lan:/opt/web/exemplo.lan
+      - ./apache/hosts:/etc/hosts
+
+    networks:
+      redeapache:
+        aliases:
+          - exemplo.lan
+          - www.exemplo.lan
+    develop:
+      watch:
+        - path: ./apache/test1.conf
+          action: rebuild
+
+  cliente:
+    image: brunosct/debian12-cliente-firefox
+    hostname: cliente
+    networks:
+      - redeapache
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+
+networks:
+  redeapache:
